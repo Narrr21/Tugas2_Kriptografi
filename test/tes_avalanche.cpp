@@ -1,6 +1,6 @@
 #include <iostream>
 #include <iomanip>
-#include "../src/cipher2.cpp"
+#include "../src/my_cipher.cpp"
 
 void printBlockHex(const char* label, const kripto::Block128& b) {
 	std::cout << std::left << std::setw(18) << label << ": 0x" 
