@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../src/template_cipher.cpp"
+#include "../src/my_cipher.cpp"
 
 int main() {
 	using namespace kripto;
