@@ -23,10 +23,20 @@ std::vector<std::uint8_t> unpadPKCS7(const std::vector<std::uint8_t>& data) {
 	if (padLen == 0 || padLen > 16 || padLen > data.size()) {
 		throw std::runtime_error("Invalid PKCS#7 padding length");
 	}
+
+	// for (std::size_t i = data.size() - padLen; i < data.size(); ++i) {
+	// 	if (data[i] != padLen) {
+	// 		throw std::runtime_error("Corrupted PKCS#7 padding bytes");
+	// 	}
+	// }
+
+	std::uint8_t diff = 0;
 	for (std::size_t i = data.size() - padLen; i < data.size(); ++i) {
-		if (data[i] != padLen) {
-			throw std::runtime_error("Corrupted PKCS#7 padding bytes");
-		}
+		diff |= (data[i] ^ padLen);
+	}
+
+	if (diff != 0) {
+		throw std::runtime_error("Corrupted PKCS#7 padding bytes");
 	}
 	return std::vector<std::uint8_t>(data.begin(), data.end() - padLen);
 }
