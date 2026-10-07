@@ -8,10 +8,10 @@ if (!(Test-Path "bin")) {
 }
 
 Write-Host "Compiling programs..."
-g++ -std=c++17 $CipherDefine test/tes_avalanche.cpp -o bin/tes_avalanche
-g++ -std=c++17 $CipherDefine test/tes_differential.cpp -o bin/tes_differential
-g++ -std=c++17 $CipherDefine test/tes_entropi.cpp -o bin/tes_entropi
-g++ -std=c++17 $CipherDefine test/tes_histogram.cpp -o bin/tes_histogram
+g++ -std=c++20 $CipherDefine -Iinclude test/tes_avalanche.cpp src/sbox.cpp src/operations.cpp src/padding.cpp src/block_cipher.cpp -o bin/tes_avalanche
+g++ -std=c++20 $CipherDefine -Iinclude test/tes_differential.cpp src/sbox.cpp src/operations.cpp src/padding.cpp src/block_cipher.cpp -o bin/tes_differential
+g++ -std=c++20 $CipherDefine -Iinclude test/tes_entropi.cpp src/sbox.cpp src/operations.cpp src/padding.cpp src/block_cipher.cpp -o bin/tes_entropi
+g++ -std=c++20 $CipherDefine -Iinclude test/tes_histogram.cpp src/sbox.cpp src/operations.cpp src/padding.cpp src/block_cipher.cpp -o bin/tes_histogram
 
 Write-Host ""
 Write-Host "Running Avalanche test..."

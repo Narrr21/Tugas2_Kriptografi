@@ -1,7 +1,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include "../src/cipher2.cpp"
+#include "../include/block_cipher.hpp"
 
 
 void printHistogram(const char* label, const kripto::Block128& block) {

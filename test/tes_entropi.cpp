@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
-#include "../src/cipher2.cpp"
+#include "../include/block_cipher.hpp"
 
 
 double byteEntropy(const kripto::Block128& block) {

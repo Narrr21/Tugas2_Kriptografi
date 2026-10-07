@@ -1,5 +1,15 @@
 #pragma once
 
+#if __has_include("sbox.hpp")
+#include "sbox.hpp"
+#include "operations.hpp"
+#include "padding.hpp"
+#else
+#include "../include/sbox.hpp"
+#include "../include/operations.hpp"
+#include "../include/padding.hpp"
+#endif
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -12,14 +22,7 @@ constexpr int ROUNDS = 16;
 constexpr std::uint64_t GOLDEN_RATIO_64 = 0x9E3779B97F4A7C15ULL;
 constexpr std::uint64_t PI_CONST_64     = 0x243F6A8885A308D3ULL;
 
-// Types & Data Structures
-struct Block128 {
-	std::uint64_t hi{0};
-	std::uint64_t lo{0};
-
-	bool operator==(const Block128& other) const = default;
-};
-
+// Cipher Modes
 enum class CipherMode {
 	ECB,
 	CBC,
@@ -28,14 +31,11 @@ enum class CipherMode {
 	CTR
 };
 
+// Round Keys Structure
 struct RoundKeys {
 	std::array<std::uint64_t, ROUNDS> subkeys{};
 	std::array<std::uint8_t, 256> sbox{};
 };
-
-// Conversions
-Block128 bytesToBlock(const std::uint8_t* src);
-void blockToBytes(Block128 b, std::uint8_t* dst);
 
 // Core Cipher Primitives
 RoundKeys keyExpansion(Block128 masterKey);
@@ -48,14 +48,7 @@ Block128 decryptBlock(Block128 ciphertext, const RoundKeys& keys);
 Block128 encryptBlock(Block128 plaintext, Block128 masterKey);
 Block128 decryptBlock(Block128 ciphertext, Block128 masterKey);
 
-// Analysis Utilities
-unsigned hammingDistance(Block128 left, Block128 right);
-
-// PKCS#7 Padding
-std::vector<std::uint8_t> padPKCS7(const std::vector<std::uint8_t>& data);
-std::vector<std::uint8_t> unpadPKCS7(const std::vector<std::uint8_t>& data);
-
-// Block Cipher Modes of Operation
+// Modes of Operation
 void incrementCounter(Block128& counter);
 
 std::vector<std::uint8_t> encryptBuffer(

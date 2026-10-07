@@ -1,41 +1,13 @@
-#if __has_include("my_cipher.hpp")
-#include "my_cipher.hpp"
+#if __has_include("block_cipher.hpp")
+#include "block_cipher.hpp"
 #else
-#include "../include/my_cipher.hpp"
+#include "../include/block_cipher.hpp"
 #endif
 
 #include <algorithm>
-#include <bit>
-#include <cstring>
 #include <stdexcept>
 
 namespace kripto {
-
-// ============================================================================
-// Core Conversions & Primitives
-// ============================================================================
-
-Block128 bytesToBlock(const std::uint8_t* src) {
-	Block128 b{};
-	for (int i = 0; i < 8; ++i) {
-		b.hi = (b.hi << 8) | src[i];
-	}
-	for (int i = 8; i < 16; ++i) {
-		b.lo = (b.lo << 8) | src[i];
-	}
-	return b;
-}
-
-void blockToBytes(Block128 b, std::uint8_t* dst) {
-	for (int i = 7; i >= 0; --i) {
-		dst[i] = static_cast<std::uint8_t>(b.hi & 0xFF);
-		b.hi >>= 8;
-	}
-	for (int i = 15; i >= 8; --i) {
-		dst[i] = static_cast<std::uint8_t>(b.lo & 0xFF);
-		b.lo >>= 8;
-	}
-}
 
 RoundKeys keyExpansion(Block128 masterKey) {
 	RoundKeys rk;
@@ -43,22 +15,15 @@ RoundKeys keyExpansion(Block128 masterKey) {
 	blockToBytes(masterKey, kbytes.data());
 
 	// Key-dependent S-box generation (Fisher-Yates permutation keyed with master key)
-	for (int i = 0; i < 256; ++i) {
-		rk.sbox[i] = static_cast<std::uint8_t>(i);
-	}
-	std::uint8_t j = 0;
-	for (int i = 0; i < 256; ++i) {
-		j = static_cast<std::uint8_t>(j + rk.sbox[i] + kbytes[i % 16] + 0x5A);
-		std::swap(rk.sbox[i], rk.sbox[j]);
-	}
+	rk.sbox = generateSBox(kbytes);
 
 	// 16 Round keys derivation via bitwise rotations and constants
 	std::uint64_t k0 = masterKey.hi;
 	std::uint64_t k1 = masterKey.lo;
 	for (unsigned r = 0; r < ROUNDS; ++r) {
-		k0 = std::rotl(k0, 19) ^ (k1 + GOLDEN_RATIO_64 + (static_cast<std::uint64_t>(r) * 0x517CC1B727220A95ULL));
-		k1 = std::rotr(k1, 23) + (k0 ^ PI_CONST_64);
-		rk.subkeys[r] = k0 ^ std::rotl(k1, 13);
+		k0 = rotl64(k0, 19) ^ (k1 + GOLDEN_RATIO_64 + (static_cast<std::uint64_t>(r) * 0x517CC1B727220A95ULL));
+		k1 = rotr64(k1, 23) + (k0 ^ PI_CONST_64);
+		rk.subkeys[r] = k0 ^ rotl64(k1, 13);
 	}
 	return rk;
 }
@@ -69,23 +34,16 @@ RoundKeys keyExpansion(const std::array<std::uint8_t, 16>& masterKey) {
 
 std::uint64_t roundFunction(std::uint64_t right, std::uint64_t roundKey, const std::array<std::uint8_t, 256>& sbox) {
 	// Modulo 2^64 addition with round key
-	std::uint64_t x = right + roundKey;
+	std::uint64_t x = addMod64(right, roundKey);
 
-	// Bit transposition using std::rotl and std::rotr
-	x = std::rotl(x, 17) ^ std::rotr(x, 29);
+	// Bit transposition using bitwise rotations
+	x = bitTransposition(x);
 
 	// Key-dependent S-box byte substitution
-	std::uint64_t sub = 0;
-	for (int i = 0; i < 8; ++i) {
-		std::uint8_t b = static_cast<std::uint8_t>(x >> (i * 8));
-		sub |= static_cast<std::uint64_t>(sbox[b]) << (i * 8);
-	}
+	std::uint64_t sub = substituteBytes(x, sbox);
 
 	// Non-linear mixing & diffusion
-	sub = std::rotl(sub, 31);
-	sub += roundKey;
-	sub ^= std::rotr(sub, 13);
-	return sub;
+	return diffuse(sub, roundKey);
 }
 
 Block128 encryptBlock(Block128 plaintext, const RoundKeys& keys) {
@@ -118,37 +76,6 @@ Block128 encryptBlock(Block128 plaintext, Block128 masterKey) {
 
 Block128 decryptBlock(Block128 ciphertext, Block128 masterKey) {
 	return decryptBlock(ciphertext, keyExpansion(masterKey));
-}
-
-unsigned hammingDistance(Block128 left, Block128 right) {
-	return static_cast<unsigned>(std::popcount(left.hi ^ right.hi) + std::popcount(left.lo ^ right.lo));
-}
-
-// ============================================================================
-// Padding & Block Modes of Operation
-// ============================================================================
-
-std::vector<std::uint8_t> padPKCS7(const std::vector<std::uint8_t>& data) {
-	std::size_t padLen = 16 - (data.size() % 16);
-	std::vector<std::uint8_t> padded = data;
-	padded.insert(padded.end(), padLen, static_cast<std::uint8_t>(padLen));
-	return padded;
-}
-
-std::vector<std::uint8_t> unpadPKCS7(const std::vector<std::uint8_t>& data) {
-	if (data.empty() || (data.size() % 16) != 0) {
-		throw std::runtime_error("Invalid PKCS#7 padded block alignment");
-	}
-	std::uint8_t padLen = data.back();
-	if (padLen == 0 || padLen > 16 || padLen > data.size()) {
-		throw std::runtime_error("Invalid PKCS#7 padding length");
-	}
-	for (std::size_t i = data.size() - padLen; i < data.size(); ++i) {
-		if (data[i] != padLen) {
-			throw std::runtime_error("Corrupted PKCS#7 padding bytes");
-		}
-	}
-	return std::vector<std::uint8_t>(data.begin(), data.end() - padLen);
 }
 
 void incrementCounter(Block128& counter) {
@@ -303,11 +230,9 @@ std::vector<std::uint8_t> decryptBuffer(
 			break;
 		}
 		case CipherMode::OFB: {
-			// OFB decryption is identical to OFB encryption
 			return encryptBuffer(data, masterKey, CipherMode::OFB, iv_or_counter);
 		}
 		case CipherMode::CTR: {
-			// CTR decryption is identical to CTR encryption
 			return encryptBuffer(data, masterKey, CipherMode::CTR, iv_or_counter);
 		}
 	}
