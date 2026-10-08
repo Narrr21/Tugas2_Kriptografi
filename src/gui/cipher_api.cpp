@@ -4,9 +4,13 @@
 #include <exception>
 #include <string>
 #include <vector>
-#include "../my_cipher.cpp"
+#include "block_cipher.hpp"
 
+#if defined(_WIN32)
 #define KRIPTO_API extern "C" __declspec(dllexport)
+#else
+#define KRIPTO_API extern "C" __attribute__((visibility("default")))
+#endif
 
 namespace {
 

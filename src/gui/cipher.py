@@ -14,7 +14,7 @@ class CipherError(Exception):
 def _load() -> ctypes.CDLL:
     if not _DLL_PATH.exists():
         raise FileNotFoundError(
-            f"{_DLL_PATH} belum ada. Jalankan src\\gui\\build.ps1 terlebih dahulu."
+            f"{_DLL_PATH.name} belum ada. Jalankan skrip build terlebih dahulu."
         )
     lib = ctypes.CDLL(str(_DLL_PATH))
     lib.kc_last_error.restype = ctypes.c_char_p
