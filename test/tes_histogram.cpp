@@ -1,34 +1,15 @@
-#include <cstdint>
+#include <array>
 #include <iomanip>
 #include <iostream>
-#include "../include/block_cipher.hpp"
+#include <vector>
+#include "test_helpers.hpp"
 
-
-void printHistogram(const char* label, const kripto::Block128& block) {
-	unsigned frequencies[256] = {};
-	for (unsigned index = 0; index < 8; ++index) {
-		++frequencies[(block.hi >> (56 - index * 8)) & 0xFFU];
-		++frequencies[(block.lo >> (56 - index * 8)) & 0xFFU];
+std::size_t distinctByteCount(const std::vector<std::uint8_t>& data) {
+	std::array<bool, 256> present{};
+	for (std::uint8_t value : data) {
+		present[value] = true;
 	}
-
-	std::cout << label << " (byte:frekuensi non-zero)\n";
-	for (unsigned byte = 0; byte < 256; ++byte) {
-		if (frequencies[byte] != 0) {
-			std::cout << std::hex << std::setw(2) << std::setfill('0') << byte
-			          << std::dec << ":" << frequencies[byte] << " ";
-		}
-	}
-	std::cout << "\n";
-}
-
-unsigned distinctByteCount(const kripto::Block128& block) {
-	bool present[256] = {};
-	for (unsigned index = 0; index < 8; ++index) {
-		present[(block.hi >> (56 - index * 8)) & 0xFFU] = true;
-		present[(block.lo >> (56 - index * 8)) & 0xFFU] = true;
-	}
-
-	unsigned count = 0;
+	std::size_t count = 0;
 	for (bool value : present) {
 		count += value ? 1U : 0U;
 	}
@@ -37,23 +18,18 @@ unsigned distinctByteCount(const kripto::Block128& block) {
 
 int main() {
 	using namespace kripto;
-	const Block128 key{0x0123456789ABCDEFULL, 0xFEDCBA9876543210ULL};
-	const Block128 plain{0x1111111111111111ULL, 0x2222222222222222ULL};
-	const Block128 ciphertext = encryptBlock(plain, key);
+	using namespace test_support;
 
-	std::cout << "==================================================\n";
-	std::cout << "              ANALISIS HISTOGRAM BYTE             \n";
-	std::cout << "==================================================\n";
-	printHistogram("Plaintext ", plain);
-	printHistogram("Ciphertext", ciphertext);
-	std::cout << "Byte berbeda plaintext : " << distinctByteCount(plain) << "\n";
-	std::cout << "Byte berbeda ciphertext: " << distinctByteCount(ciphertext) << "\n";
-
-	if (!(decryptBlock(ciphertext, key) == plain)
-		|| distinctByteCount(ciphertext) <= distinctByteCount(plain)) {
-		std::cerr << "[STATUS] Histogram test: GAGAL\n";
-		return 1;
+	const std::vector<std::uint8_t> plain(1 << 16, 0x41);
+	for (CipherMode mode : allModes()) {
+		const auto ciphertext = encryptBuffer(plain, key, mode, iv);
+		if (decryptBuffer(ciphertext, key, mode, iv) != plain) {
+			std::cerr << modeName(mode) << " histogram round-trip gagal\n";
+			return 1;
+		}
+		std::cout << modeName(mode) << ": plaintext "
+			<< distinctByteCount(plain) << " byte unik, ciphertext "
+			<< distinctByteCount(ciphertext) << " byte unik\n";
 	}
-	std::cout << "[STATUS] Histogram test: BERHASIL\n";
-	std::cout << "==================================================\n";
+	std::cout << "Histogram test berhasil\n";
 }

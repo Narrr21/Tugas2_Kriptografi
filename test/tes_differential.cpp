@@ -1,45 +1,47 @@
-#include <iostream>
 #include <iomanip>
-#include "../include/block_cipher.hpp"
-
-void printBlockHex(const char* label, const kripto::Block128& b) {
-	std::cout << std::left << std::setw(20) << label << ": 0x" 
-	          << std::hex << std::setfill('0') 
-	          << std::setw(16) << b.hi << std::setw(16) << b.lo 
-	          << std::dec << std::setfill(' ') << "\n";
-}
+#include <iostream>
+#include <vector>
+#include "test_helpers.hpp"
 
 int main() {
 	using namespace kripto;
-	const Block128 key{0xA5A5A5A5A5A5A5A5ULL, 0x5A5A5A5A5A5A5A5AULL};
-	const Block128 plain{0x0123456789ABCDEFULL, 0x0F1E2D3C4B5A6978ULL};
-	const Block128 delta{0x0000000000000001ULL, 0x0000000000000000ULL};
-	
-	const Block128 plainWithDelta{plain.hi ^ delta.hi, plain.lo ^ delta.lo};
-	const Block128 result = encryptBlock(plain, key);
-	const Block128 resultWithDelta = encryptBlock(plainWithDelta, key);
-	
-	const Block128 cipherDelta{result.hi ^ resultWithDelta.hi, result.lo ^ resultWithDelta.lo};
-	const unsigned diffBits = hammingDistance(result, resultWithDelta);
+	using namespace test_support;
 
-	std::cout << "==================================================\n";
-	std::cout << "         ANALISIS DIFFERENTIAL CRYPTANALYSIS      \n";
-	std::cout << "==================================================\n";
-	printBlockHex("Key", key);
-	printBlockHex("Plaintext (P1)", plain);
-	printBlockHex("Input Delta (dP)", delta);
-	printBlockHex("Plaintext Delta (P2)", plainWithDelta);
-	std::cout << "--------------------------------------------------\n";
-	printBlockHex("Ciphertext 1 (C1)", result);
-	printBlockHex("Ciphertext 2 (C2)", resultWithDelta);
-	printBlockHex("Output Delta (dC)", cipherDelta);
-	std::cout << "--------------------------------------------------\n";
-	std::cout << "Hamming Distance : " << diffBits << " bit berbeda\n";
+	unsigned totalChanged = 0;
+	unsigned totalBits = 0;
+	const auto delta = std::uint8_t{0x01};
 
-	if (!(decryptBlock(result, key) == plain) || diffBits == 0) {
-		std::cerr << "\n[STATUS] Differential test: GAGAL\n";
+	for (CipherMode mode : allModes()) {
+		unsigned modeChanged = 0;
+		unsigned modeBits = 0;
+		for (unsigned trial = 0; trial < 100; ++trial) {
+			auto plain = makeData(64, 0x2000 + trial);
+			auto changed = plain;
+			changed[(trial * 13) % changed.size()] ^= delta;
+			const auto first = encryptBuffer(plain, key, mode, iv);
+			const auto second = encryptBuffer(changed, key, mode, iv);
+			if (decryptBuffer(first, key, mode, iv) != plain
+				|| decryptBuffer(second, key, mode, iv) != changed) {
+				std::cerr << modeName(mode) << " round-trip gagal\n";
+				return 1;
+			}
+			const unsigned bits = static_cast<unsigned>(first.size() * 8);
+			const unsigned changedBits = hammingDistance(first, second);
+			modeChanged += changedBits;
+			modeBits += bits;
+			totalChanged += changedBits;
+			totalBits += bits;
+		}
+		std::cout << modeName(mode) << ": " << std::fixed << std::setprecision(2)
+			<< (100.0 * modeChanged / modeBits) << "% ("
+			<< modeChanged << "/" << modeBits << " bit)\n";
+	}
+
+	std::cout << "Differential rata-rata: " << std::fixed << std::setprecision(2)
+		<< (100.0 * totalChanged / totalBits) << "%\n";
+	if (totalChanged == 0) {
+		std::cerr << "Differential test gagal\n";
 		return 1;
 	}
-	std::cout << "[STATUS] Differential test: BERHASIL (Perubahan terdeteksi)\n";
-	std::cout << "==================================================\n";
+	std::cout << "Differential test berhasil\n";
 }
