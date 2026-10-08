@@ -6,12 +6,14 @@ mkdir -p bin
 
 SRCS="src/sbox.cpp src/operations.cpp src/padding.cpp src/block_cipher.cpp"
 
+TESTS="avalanche differential entropi histogram linear modes"
+
 echo "Compiling programs..."
-for test in avalanche differential entropi histogram; do
+for test in $TESTS; do
     g++ -std=c++20 ${CIPHER_DEFINE:-} -Iinclude "test/tes_${test}.cpp" $SRCS -o "bin/tes_${test}"
 done
 
-for test in avalanche differential entropi histogram; do
+for test in $TESTS; do
     echo ""
     echo "Running ${test^} test..."
     "./bin/tes_${test}"

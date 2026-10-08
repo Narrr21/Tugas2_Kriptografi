@@ -5,7 +5,7 @@
 #include <random>
 #include <string>
 #include <vector>
-#include "../src/my_cipher.cpp"
+#include "block_cipher.hpp"
 
 namespace test_support {
 
