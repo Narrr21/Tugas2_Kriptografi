@@ -2,12 +2,11 @@
 
 Implementasi algoritma kriptografi cipher blok simetris 128-bit berbasis Jaringan Feistel (Feistel Network) dengan pengujian analisis keamanan dan antarmuka web interaktif.
 
+> **API Documentation:** [https://narrr21.github.io/Tugas2_Kriptografi/](https://narrr21.github.io/Tugas2_Kriptografi/)
+
 ---
 
-## 1. Nama dan Deskripsi Program
-
-- **Nama Program:** Cipher Blok 128-bit (Feistel Network)
-- **Deskripsi:**  
+## 1. Deskripsi Program 
   Program ini mengimplementasikan algoritma enkripsi dan dekripsi simetris menggunakan struktur Jaringan Feistel 16 round dengan ukuran blok 128-bit dan panjang kunci 128-bit. Fitur utama algoritma mencakup:
   - **Key-Dependent Dynamic S-Box:** Pembentukan tabel substitusi dinamis 8-bit berdasarkan kunci utama menggunakan algoritma Fisher-Yates permutation.
   - **Key Schedule / Key Expansion:** Derivasi 16 subkunci putaran (round keys) 64-bit menggunakan operasi rotasi bit dan konstanta matematika (Golden Ratio & Digit Pi).
@@ -24,7 +23,7 @@ Implementasi algoritma kriptografi cipher blok simetris 128-bit berbasis Jaringa
 
 ---
 
-## 2. Teknologi yang Digunakan (Tech Stack)
+## 2. Tech Stack
 
 - **C++ (Standar C++20):** Implementasi inti algoritma cipher blok, fungsi padding, ekspansi kunci, shared library C API, dan suite pengujian performa/keamanan.
 - **Python 3:** Wrapper API menggunakan modul `ctypes` untuk menjembatani shared library C++ dengan antarmuka pengguna.
@@ -121,5 +120,11 @@ pip install -r src/gui/requirements.txt
     ```cmd
     src\gui\run.bat
     ```
-
 Aplikasi web otomatis terbuka pada browser default (umumnya di `http://localhost:8501`).
+
+---
+
+## 5. Dokumentasi API
+
+Dokumentasi API lengkap dapat diakses secara daring pada:  
+[https://narrr21.github.io/Tugas2_Kriptografi/](https://narrr21.github.io/Tugas2_Kriptografi/)
