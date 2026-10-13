@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Dokumentasi API Custom Block Cipher (Python & C++)" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>Custom Block Cipher</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Dokumentasi API";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> Custom Block Cipher
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Dokumentasi API</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-python-api-cipherpy">1. Python API (cipher.py)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#konstanta-eksepsi">Konstanta &amp; Eksepsi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cipherencrypt">cipher.encrypt</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#penjelasan-parameter">Penjelasan Parameter</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nilai-kembalian-output">Nilai Kembalian (Output)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cipherdecrypt">cipher.decrypt</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#penjelasan-parameter_1">Penjelasan Parameter</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nilai-kembalian-output_1">Nilai Kembalian (Output)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contoh-penggunaan-python">Contoh Penggunaan (Python)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-c-api-core-block_cipherhpp">2. C++ API Core (block_cipher.hpp)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tipe-data-utama">Tipe Data Utama</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#kriptoencryptbuffer-kriptodecryptbuffer">kripto::encryptBuffer / kripto::decryptBuffer</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#penjelasan-parameter_2">Penjelasan Parameter</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#nilai-kembalian-output_2">Nilai Kembalian (Output)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#operasi-primitif-blok-tunggal">Operasi Primitif Blok Tunggal</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#contoh-penggunaan-c">Contoh Penggunaan (C++)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-penjelasan-tambahan">3. Penjelasan Tambahan</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#ringkasan-mode-operasi">Ringkasan Mode Operasi</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#skema-padding-pkcs7">Skema Padding PKCS#7</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#keamanan-kunci-dan-thread-safety">Keamanan Kunci dan Thread Safety</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">Custom Block Cipher</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Dokumentasi API</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dokumentasi-api-custom-block-cipher">Dokumentasi API Custom Block Cipher</h1>
+<p>Dokumentasi resmi untuk antarmuka pemrograman aplikasi (API) pustaka kriptografi <strong>Custom Block Cipher</strong> (128-bit). Pustaka ini mengimplementasikan cipher Feistel 16-ronde dengan S-box dinamis berbasis kunci (<em>key-dependent S-box</em>), mendukung 5 mode operasi dan padding PKCS#7.</p>
+<hr />
+<h2 id="1-python-api-cipherpy">1. Python API (<code>cipher.py</code>)</h2>
+<p>Wrapper tingkat tinggi berbasis <code>ctypes</code> untuk integrasi Python dan GUI Streamlit.</p>
+<h3 id="konstanta-eksepsi">Konstanta &amp; Eksepsi</h3>
+<ul>
+<li><code>cipher.BLOCK_SIZE</code> (<code>int</code>): Ukuran blok cipher, bernilai tetap <code>16</code> (128 bit).</li>
+<li><code>cipher.MODES</code> (<code>list[str]</code>): Mode operasi yang didukung: <code>["ECB", "CBC", "CFB", "OFB", "CTR"]</code>.</li>
+<li><code>cipher.CipherError</code>: Dilemparkan ketika proses enkripsi/dekripsi native gagal (misal padding tidak valid atau mode tidak dikenal).</li>
+<li><code>ValueError</code>: Dilemparkan saat panjang <code>key</code> atau <code>iv</code> bukan 16 byte.</li>
+</ul>
+<hr />
+<h3 id="cipherencrypt"><code>cipher.encrypt</code></h3>
+<p>Melakukan enkripsi buffer biner menggunakan kunci, mode operasi, dan IV tertentu.</p>
+<h4 id="penjelasan-parameter">Penjelasan Parameter</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Tipe Data</th>
+<th style="text-align: left;">Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>data</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;">Plaintext yang akan dienkripsi (panjang sembarang).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>key</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;">Kunci enkripsi simetris 128-bit (<strong>wajib tepat 16 byte</strong>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mode</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Mode operasi: <code>"ECB"</code>, <code>"CBC"</code>, <code>"CFB"</code>, <code>"OFB"</code>, atau <code>"CTR"</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iv</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;"><em>Initialization Vector</em> / nilai awal counter (<strong>wajib tepat 16 byte</strong>). Pada mode <code>"ECB"</code>, nilai ini diabaikan namun tetap harus 16 byte.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nilai-kembalian-output">Nilai Kembalian (Output)</h4>
+<ul>
+<li><strong>Tipe Data:</strong> <code>bytes</code></li>
+<li><strong>Keterangan:</strong> Ciphertext terenkripsi (dengan padding PKCS#7 jika mode ECB/CBC).</li>
+</ul>
+<hr />
+<h3 id="cipherdecrypt"><code>cipher.decrypt</code></h3>
+<p>Melakukan dekripsi ciphertext kembali menjadi plaintext.</p>
+<h4 id="penjelasan-parameter_1">Penjelasan Parameter</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Tipe Data</th>
+<th style="text-align: left;">Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>data</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;">Ciphertext yang akan didekripsi.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>key</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;">Kunci dekripsi simetris 128-bit (<strong>wajib tepat 16 byte</strong>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mode</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">Mode operasi: <code>"ECB"</code>, <code>"CBC"</code>, <code>"CFB"</code>, <code>"OFB"</code>, atau <code>"CTR"</code>. Harus sama dengan saat enkripsi.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iv</code></td>
+<td style="text-align: left;"><code>bytes</code></td>
+<td style="text-align: left;"><em>Initialization Vector</em> 16 byte yang sama saat enkripsi.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nilai-kembalian-output_1">Nilai Kembalian (Output)</h4>
+<ul>
+<li><strong>Tipe Data:</strong> <code>bytes</code></li>
+<li><strong>Keterangan:</strong> Plaintext asli setelah padding dihilangkan (<em>unpadded</em>).</li>
+</ul>
+<hr />
+<h3 id="contoh-penggunaan-python">Contoh Penggunaan (Python)</h3>
+<pre><code class="language-python">import cipher
+
+# 1. Siapkan Kunci (16 byte), IV (16 byte), dan Plaintext
+key = bytes.fromhex(&quot;0123456789ABCDEFFEDCBA9876543210&quot;)
+iv  = bytes.fromhex(&quot;A5A5A5A5A5A5A5A55A5A5A5A5A5A5A5A&quot;)
+plaintext = &quot;Kriptografi 128-bit dengan MkDocs API&quot;.encode(&quot;utf-8&quot;)
+
+# 2. Enkripsi (Mode CBC)
+ciphertext = cipher.encrypt(plaintext, key=key, mode=&quot;CBC&quot;, iv=iv)
+print(&quot;Ciphertext (HEX):&quot;, ciphertext.hex().upper())
+
+# 3. Dekripsi
+decrypted = cipher.decrypt(ciphertext, key=key, mode=&quot;CBC&quot;, iv=iv)
+print(&quot;Decrypted text  :&quot;, decrypted.decode(&quot;utf-8&quot;))
+
+# 4. Error Handling
+try:
+    salah_kunci = b&quot;terlalu_pendek&quot;
+    cipher.encrypt(plaintext, key=salah_kunci, mode=&quot;ECB&quot;, iv=iv)
+except ValueError as e:
+    print(&quot;Validasi gagal:&quot;, e)
+</code></pre>
+<hr />
+<h2 id="2-c-api-core-block_cipherhpp">2. C++ API Core (<code>block_cipher.hpp</code>)</h2>
+<p>API <em>native</em> performa tinggi yang diimplementasikan dalam <em>namespace</em> <code>kripto</code>.</p>
+<h3 id="tipe-data-utama">Tipe Data Utama</h3>
+<pre><code class="language-cpp">namespace kripto {
+    enum class CipherMode { ECB, CBC, CFB, OFB, CTR };
+
+    struct Block128 {
+        std::uint64_t hi{0};
+        std::uint64_t lo{0};
+    };
+}
+</code></pre>
+<hr />
+<h3 id="kriptoencryptbuffer-kriptodecryptbuffer"><code>kripto::encryptBuffer</code> / <code>kripto::decryptBuffer</code></h3>
+<p>Enkripsi dan dekripsi buffer berukuran dinamis secara otomatis menangani padding dan rantai blok.</p>
+<pre><code class="language-cpp">std::vector&lt;std::uint8_t&gt; encryptBuffer(
+    const std::vector&lt;std::uint8_t&gt;&amp; data,
+    Block128 masterKey,
+    CipherMode mode = CipherMode::CBC,
+    Block128 iv_or_counter = {}
+);
+
+std::vector&lt;std::uint8_t&gt; decryptBuffer(
+    const std::vector&lt;std::uint8_t&gt;&amp; data,
+    Block128 masterKey,
+    CipherMode mode = CipherMode::CBC,
+    Block128 iv_or_counter = {}
+);
+</code></pre>
+<h4 id="penjelasan-parameter_2">Penjelasan Parameter</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;">Tipe Data</th>
+<th style="text-align: left;">Keterangan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>data</code></td>
+<td style="text-align: left;"><code>const std::vector&lt;std::uint8_t&gt;&amp;</code></td>
+<td style="text-align: left;">Buffer data masukan (plaintext / ciphertext).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>masterKey</code></td>
+<td style="text-align: left;"><code>kripto::Block128</code></td>
+<td style="text-align: left;">Kunci master 128-bit (<code>hi</code> dan <code>lo</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>mode</code></td>
+<td style="text-align: left;"><code>kripto::CipherMode</code></td>
+<td style="text-align: left;">Enum mode operasi: <code>ECB</code>, <code>CBC</code>, <code>CFB</code>, <code>OFB</code>, <code>CTR</code>. Default: <code>CBC</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iv_or_counter</code></td>
+<td style="text-align: left;"><code>kripto::Block128</code></td>
+<td style="text-align: left;">IV / initial counter 128-bit. Default: blok nol.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="nilai-kembalian-output_2">Nilai Kembalian (Output)</h4>
+<ul>
+<li><strong>Tipe Data:</strong> <code>std::vector&lt;std::uint8_t&gt;</code></li>
+<li><strong>Keterangan:</strong> Vektor biner hasil proses enkripsi / dekripsi.</li>
+</ul>
+<hr />
+<h3 id="operasi-primitif-blok-tunggal">Operasi Primitif Blok Tunggal</h3>
+<p>Untuk operasi tingkat rendah langsung pada satu blok 128-bit:</p>
+<pre><code class="language-cpp">Block128 encryptBlock(Block128 plaintext, Block128 masterKey);
+Block128 decryptBlock(Block128 ciphertext, Block128 masterKey);
+</code></pre>
+<ul>
+<li><strong>Input:</strong> <code>plaintext</code> / <code>ciphertext</code> (1 blok 128-bit), <code>masterKey</code> (128-bit).</li>
+<li><strong>Output:</strong> <code>Block128</code> (blok hasil transformasi Feistel 16 ronde).</li>
+</ul>
+<hr />
+<h3 id="contoh-penggunaan-c">Contoh Penggunaan (C++)</h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &quot;block_cipher.hpp&quot;
+
+int main() {
+    // Kunci 128-bit: 0x0123456789ABCDEF, 0xFEDCBA9876543210
+    kripto::Block128 key{0x0123456789ABCDEFULL, 0xFEDCBA9876543210ULL};
+    kripto::Block128 iv{0xA5A5A5A5A5A5A5A5ULL, 0x5A5A5A5A5A5A5A5AULL};
+
+    std::vector&lt;std::uint8_t&gt; data = {'H', 'a', 'l', 'o', ' ', 'D', 'u', 'n', 'i', 'a'};
+
+    // Enkripsi
+    auto ct = kripto::encryptBuffer(data, key, kripto::CipherMode::CBC, iv);
+
+    // Dekripsi
+    auto pt = kripto::decryptBuffer(ct, key, kripto::CipherMode::CBC, iv);
+
+    std::cout &lt;&lt; &quot;Panjang terdekripsi: &quot; &lt;&lt; pt.size() &lt;&lt; &quot; bytes\n&quot;;
+    return 0;
+}
+</code></pre>
+<hr />
+<h2 id="3-penjelasan-tambahan">3. Penjelasan Tambahan</h2>
+<h3 id="ringkasan-mode-operasi">Ringkasan Mode Operasi</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Kebutuhan IV</th>
+<th style="text-align: left;">Perlu Padding PKCS#7?</th>
+<th style="text-align: left;">Toleran Kerusakan Transmisi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>ECB</strong> (<em>Electronic Codebook</em>)</td>
+<td style="text-align: left;">Tidak (diabaikan)</td>
+<td style="text-align: left;"><strong>Ya</strong> (kelipatan 16 byte)</td>
+<td style="text-align: left;">Tidak ada propagasi error antar-blok</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CBC</strong> (<em>Cipher Block Chaining</em>)</td>
+<td style="text-align: left;"><strong>Ya</strong> (16 byte acak)</td>
+<td style="text-align: left;"><strong>Ya</strong> (kelipatan 16 byte)</td>
+<td style="text-align: left;">Error merusak blok saat ini &amp; 1 bit blok berikutnya</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CFB</strong> (<em>Cipher Feedback</em>)</td>
+<td style="text-align: left;"><strong>Ya</strong> (16 byte)</td>
+<td style="text-align: left;">Tidak (Stream mode)</td>
+<td style="text-align: left;">Error mempropagasi hingga 1 blok penuh</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OFB</strong> (<em>Output Feedback</em>)</td>
+<td style="text-align: left;"><strong>Ya</strong> (16 byte unik)</td>
+<td style="text-align: left;">Tidak (Stream mode)</td>
+<td style="text-align: left;">Error 1 bit di ciphertext hanya merusak 1 bit plaintext</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CTR</strong> (<em>Counter Mode</em>)</td>
+<td style="text-align: left;"><strong>Ya</strong> (Counter unik)</td>
+<td style="text-align: left;">Tidak (Stream mode)</td>
+<td style="text-align: left;">Mendukung enkripsi/dekripsi paralel &amp; akses acak</td>
+</tr>
+</tbody>
+</table>
+<h3 id="skema-padding-pkcs7">Skema Padding PKCS#7</h3>
+<p>Pada mode blok (ECB &amp; CBC), jika data masukan berukuran $N$ byte, padding sebanyak $P = 16 - (N \pmod{16})$ byte ditambahkan ke akhir data, di mana setiap byte padding bernilai $P$. Jika data sudah tepat kelipatan 16 byte, 1 blok penuh (16 byte bernilai <code>0x10</code>) ditambahkan.</p>
+<h3 id="keamanan-kunci-dan-thread-safety">Keamanan Kunci dan Thread Safety</h3>
+<ul>
+<li><strong>Key-dependent S-box:</strong> S-box di-generate ulang per sesi melalui algoritma Fisher-Yates dengan byte kunci sebagai entropi.</li>
+<li><strong>Thread Safety:</strong> Fungsi <code>encryptBuffer</code> dan <code>decryptBuffer</code> bersifat <em>re-entrant</em> dan aman dipanggil secara konkuren antar-<em>thread</em>.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-10-13 11:52:32.627305+00:00
+-->
