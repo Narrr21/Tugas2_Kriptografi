@@ -1,3 +1,5 @@
+import hashlib
+
 import streamlit as st
 
 import cipher
@@ -10,8 +12,10 @@ iv_hex = st.text_input("IV (32 hex)", "A5A5A5A5A5A5A5A55A5A5A5A5A5A5A5A", disabl
 op = st.radio("Operasi", ["Enkripsi", "Dekripsi"], horizontal=True)
 
 if op == "Enkripsi":
-    text = st.text_area("Plaintext (teks)")
+    fmt = st.radio("Format plaintext", ["Teks", "Hex"], horizontal=True)
+    text = st.text_area(f"Plaintext ({fmt.lower()})")
 else:
+    fmt = "Hex"
     text = st.text_area("Ciphertext (hex)")
 uploaded = st.file_uploader("Atau pilih file")
 
@@ -21,7 +25,7 @@ if st.button(op, type="primary"):
         iv = bytes.fromhex(iv_hex)
         if uploaded is not None:
             data = uploaded.getvalue()
-        elif op == "Enkripsi":
+        elif fmt == "Teks":
             data = text.encode("utf-8")
         else:
             data = bytes.fromhex(text)
@@ -43,4 +47,14 @@ if st.button(op, type="primary"):
                 st.code(result.hex().upper(), language=None)
         else:
             st.code(result.hex().upper(), language=None)
+
+        if op == "Enkripsi":
+            in_label, out_label = "plaintext", "ciphertext"
+        else:
+            in_label, out_label = "ciphertext", "hasil dekripsi"
+        st.code(
+            f"SHA-256 {in_label}: {hashlib.sha256(data).hexdigest()}\n"
+            f"SHA-256 {out_label}: {hashlib.sha256(result).hexdigest()}",
+            language=None,
+        )
         st.download_button("Simpan hasil", result, file_name="hasil.bin", on_click="ignore")
