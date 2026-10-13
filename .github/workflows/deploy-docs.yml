@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - feat/api_documentation
 
 permissions:
   contents: write
